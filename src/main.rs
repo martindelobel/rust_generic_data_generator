@@ -1,5 +1,6 @@
 mod json_reader;
 mod models;
+use crate::json_reader::json_reader::*;
 
 use std::fs::read_to_string;
 
@@ -13,7 +14,6 @@ fn main() {
 
     println!("Args Clap: {:?}", args_clap);
     println!("Format: {}", args_clap.format);
-    use crate::json_reader::json_reader::read_json_file;
     let args_object = read_json_file(args_clap.schema);
     println!("{:?}", args_object);
 }

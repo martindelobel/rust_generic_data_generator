@@ -1,15 +1,7 @@
+use crate::models::models::Schema;
+
 pub mod json_reader {
-
-    #[derive(Debug, serde::Deserialize)]
-    pub struct Schema {
-        fields: Vec<Field>,
-    }
-
-    #[derive(Debug, serde::Deserialize)]
-    struct Field {
-        fieldName: String,
-        fieldType: String,
-    }
+    use crate::models::models::Schema;
 
     pub fn read_json_file(file_path: String) -> Schema {
         let file_content = std::fs::read_to_string(file_path).unwrap();
