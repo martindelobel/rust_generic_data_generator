@@ -4,12 +4,6 @@ pub mod models {
         fields: Vec<Field>,
     }
 
-    impl Schema {
-        pub fn get_fields(&self) -> &Vec<Field> {
-            &self.fields
-        }
-    }
-
     #[derive(Debug, serde::Deserialize)]
     struct Field {
         fieldName: String,

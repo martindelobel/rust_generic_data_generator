@@ -15,7 +15,14 @@ fn main() {
     println!("Args Clap: {:?}", args_clap);
     println!("Format: {}", args_clap.format);
     let args_object = read_json_file(args_clap.schema);
-    println!("{:?}", args_object);
+    match args_object {
+        Ok(schema) => {
+            println!("Schema: {:?}", schema);
+        }
+        Err(e) => {
+            println!("Error: {:?}", e);
+        }
+    }
 }
 
 #[derive(Parser, Debug)]
