@@ -2,7 +2,7 @@ mod json_reader;
 mod models;
 use crate::json_reader::json_reader::*;
 use clap::Parser;
-use models::models::Schema;
+use models::models::*;
 use serde_json::error::Error;
 fn main() {
     let args_raw = std::env::args().collect::<Vec<String>>();
@@ -22,21 +22,3 @@ fn main() {
         }
     }
 }
-
-#[derive(Parser, Debug)]
-struct Args {
-    format: String,
-    size: String,
-    schema: String,
-    output: String,
-}
-
-// enum Format {
-//     Parquet,
-//     Delta,
-// }
-// #[derive(Parser, Debug)]
-// struct Output {
-//     path: String,
-//     file_system: String,
-// }

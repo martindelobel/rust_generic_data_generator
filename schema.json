@@ -1,12 +1,12 @@
 {
     "fields": [
         {
-            "fieldName": "name",
-            "fieldType": "String"
+            "field_name": "name",
+            "field_type": "String"
         },
         {
-            "fieldName": "age",
-            "fieldType": "Integer"
+            "field_name": "age",
+            "field_type": "Integer"
         }
     ]
 }
