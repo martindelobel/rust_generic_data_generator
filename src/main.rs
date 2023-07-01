@@ -1,11 +1,9 @@
 mod json_reader;
 mod models;
 use crate::json_reader::json_reader::*;
-
-use std::fs::read_to_string;
-
 use clap::Parser;
-
+use models::models::Schema;
+use serde_json::error::Error;
 fn main() {
     let args_raw = std::env::args().collect::<Vec<String>>();
     println!("args: {:?}", args_raw);
@@ -14,7 +12,7 @@ fn main() {
 
     println!("Args Clap: {:?}", args_clap);
     println!("Format: {}", args_clap.format);
-    let args_object = read_json_file(args_clap.schema);
+    let args_object: Result<Schema, Error> = read_json_file(args_clap.schema);
     match args_object {
         Ok(schema) => {
             println!("Schema: {:?}", schema);
