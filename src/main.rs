@@ -1,6 +1,8 @@
+mod delta_lake;
 mod json_reader;
 mod models;
 mod parquet_handler;
+use crate::delta_lake::delta_lake::*;
 use crate::json_reader::json_reader::*;
 use clap::Parser;
 use models::models::*;
@@ -23,6 +25,24 @@ fn main() {
             println!("Error: {:?}", e);
         }
     }
+    use tokio::runtime::Runtime;
+
+    let mut rt = Runtime::new().unwrap();
+
+    let path = args_clap.output;
+
+    let result = rt.block_on(create_table(&path));
+
+    // Handle the result
+    match result {
+        Ok(table) => {
+            println!("Table created successfully: {:?}", table);
+        }
+        Err(error) => {
+            eprintln!("Error creating table: {:?}", error);
+        }
+    }
+
     // let parquet_handler = ParquetHandler {
     //     path: args_clap.output,
     // };
