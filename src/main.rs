@@ -33,7 +33,6 @@ fn main() {
 
     let result = rt.block_on(create_table(&path));
 
-    // Handle the result
     match result {
         Ok(table) => {
             println!("Table created successfully: {:?}", table);
