@@ -2,7 +2,6 @@ mod json_reader;
 mod models;
 mod parquet_handler;
 use crate::json_reader::json_reader::*;
-use crate::parquet_handler::parquet_handler::*;
 use clap::Parser;
 use models::models::*;
 use serde_json::error::Error;
@@ -24,9 +23,9 @@ fn main() {
             println!("Error: {:?}", e);
         }
     }
-    let parquet_handler = ParquetHandler {
-        path: args_clap.output,
-    };
+    // let parquet_handler = ParquetHandler {
+    //     path: args_clap.output,
+    // };
 
-    parquet_handler.writeParquet();
+    // parquet_handler.writeParquet();
 }
