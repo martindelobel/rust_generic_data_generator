@@ -14,7 +14,7 @@ pub mod delta_lake {
             .with_column(
                 "board_name",
                 SchemaDataType::primitive(String::from("string")),
-                false,
+                true,
                 Default::default(),
             )
             .await;
