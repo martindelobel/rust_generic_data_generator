@@ -24,7 +24,7 @@ use crate::arrow::{
 fn get_table_batches() -> RecordBatch {
     let schema = Arc::new(ArrowSchema::new(vec![
         Field::new("board_id", DataType::Int32, false),
-        Field::new("board_name", DataType::Utf8, true),
+        Field::new("board_name", DataType::Utf8, false),
     ]));
 
     let str_values = StringArray::from(vec!["A", "B", "A", "B", "A", "A", "A", "B", "B", "A", "A"]);
@@ -47,7 +47,7 @@ async fn create_initialized_table(table_path: &String) -> DeltaTable {
         .with_column(
             "board_name",
             SchemaDataType::primitive(String::from("string")),
-            true,
+            false,
             Default::default(),
         )
         .await
@@ -105,11 +105,11 @@ async fn main() -> Result<(), Error> {
     let result = writer.write(batch).await;
 
 
-    let adds = writer
+    let version = writer
     .flush_and_commit(&mut table)
     .await
     .expect("Failed to flush write");
-    println!("{} adds written", adds);
+    println!("{} version written", version);
 
 
     // let parquet_handler = ParquetHandler {
