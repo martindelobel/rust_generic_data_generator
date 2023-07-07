@@ -33,22 +33,30 @@ fn get_table_batches() -> RecordBatch {
     RecordBatch::try_new(schema, vec![Arc::new(int_values), Arc::new(str_values)]).unwrap()
 }
 
-pub async fn write(table: &DeltaTable) -> Result<(), DeltaTableError> {
-    let writer_properties = WriterProperties::builder()
-    .set_compression(Compression::ZSTD(ZstdLevel::try_new(3).unwrap()))
-    .build();
-
-    let mut writer = RecordBatchWriter::for_table(&table)
-    .expect("Failed to make RecordBatchWriter");
-
-    let batch = get_table_batches();   
-
-    let result = writer.write(batch).await;
-    return result;
+async fn create_initialized_table(table_path: &String) -> DeltaTable {
+    DeltaOps::try_from_uri(table_path)
+        .await
+        .unwrap()
+        .create()
+        .with_column(
+            "board_id",
+            SchemaDataType::primitive(String::from("integer")),
+            false,
+            Default::default(),
+        )
+        .with_column(
+            "board_name",
+            SchemaDataType::primitive(String::from("string")),
+            true,
+            Default::default(),
+        )
+        .await
+        .unwrap()
 }
 
 
-fn main() {
+#[tokio::main]
+async fn main() -> Result<(), Error> {
     let args_raw = std::env::args().collect::<Vec<String>>();
     println!("args: {:?}", args_raw);
 
@@ -72,33 +80,42 @@ fn main() {
 
     let path = args_clap.output;
 
-    let result = rt.block_on(create_table(&path));
 
+    let maybe_table = deltalake::open_table(&path).await;
 
-
-    match result {
-        Ok(table) => {
-            println!("Table created successfully: {:?}", table);
-            let res = rt.block_on(write(&table));
-            match res{
-                Ok(()) => {
-                    println!("wrote some data")
-                }
-                Err(error) => {
-                    eprintln!("Error writing into table: {:?}", error);
-                }
-            }
-
-
+    let mut table = match maybe_table {
+        Ok(table) => table,
+        Err(DeltaTableError::NotATable(_)) => {
+            println!("It doesn't look like our delta table has been created");
+            create_initialized_table(&path).await
         }
-        Err(error) => {
-            eprintln!("Error creating table: {:?}", error);
-        }
-    }
+        Err(err) => Err(err).unwrap(),
+    };
+
+
+    let writer_properties = WriterProperties::builder()
+    .set_compression(Compression::ZSTD(ZstdLevel::try_new(3).unwrap()))
+    .build();
+
+    let mut writer = RecordBatchWriter::for_table(&table)
+    .expect("Failed to make RecordBatchWriter");
+
+    let batch = get_table_batches();   
+
+    let result = writer.write(batch).await;
+
+
+    let adds = writer
+    .flush_and_commit(&mut table)
+    .await
+    .expect("Failed to flush write");
+    println!("{} adds written", adds);
+
 
     // let parquet_handler = ParquetHandler {
     //     path: args_clap.output,
     // };
 
     // parquet_handler.writeParquet();
+    Ok(())
 }
