@@ -10,7 +10,7 @@ pub mod models {
     }
 
     #[derive(Debug, serde::Deserialize)]
-    pub struct DataSchema {
+    pub struct Schema {
         fields: Vec<Field>,
     }
 
