@@ -2,11 +2,15 @@ mod delta_lake;
 mod json_reader;
 mod models;
 mod parquet_handler;
-use crate::delta_lake::delta_lake::*;
+mod parquet_writer;
 use crate::json_reader::json_reader::*;
 use clap::Parser;
 use models::models::*;
+use polars::df;
 use serde_json::error::Error;
+use polars::prelude::NamedFrom;
+use crate::parquet_writer::parquet_writer::write_in_parquet;
+
 fn main() {
     let args_raw = std::env::args().collect::<Vec<String>>();
     println!("args: {:?}", args_raw);
@@ -30,7 +34,7 @@ fn main() {
     let mut rt = Runtime::new().unwrap();
 
     let path = args_clap.output;
-
+/* 
     let result = rt.block_on(create_table(&path));
 
     match result {
@@ -40,7 +44,15 @@ fn main() {
         Err(error) => {
             eprintln!("Error creating table: {:?}", error);
         }
-    }
+    } */
+
+    let df = df!(
+        "foo" => &[1, 2, 3],
+        "bar" => &[None, Some("bak"), Some("baz")],
+    )
+    .unwrap();
+
+    rt.block_on(write_in_parquet(&path, df))
 }
 
 /*
