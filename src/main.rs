@@ -3,6 +3,7 @@ mod json_reader;
 mod models;
 mod parquet_handler;
 mod parquet_writer;
+mod delta_writer;
 use crate::json_reader::json_reader::*;
 use clap::Parser;
 use models::models::*;
@@ -10,6 +11,7 @@ use polars::df;
 use serde_json::error::Error;
 use polars::prelude::NamedFrom;
 use crate::parquet_writer::parquet_writer::write_in_parquet;
+use crate::delta_writer::delta_writer::write_in_delta;
 
 fn main() {
     let args_raw = std::env::args().collect::<Vec<String>>();
@@ -40,6 +42,6 @@ fn main() {
     )
     .unwrap();
 
-    rt.block_on(write_in_parquet(&path, df))
+    rt.block_on(write_in_delta(&path, df))
 }
 
