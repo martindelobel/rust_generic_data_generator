@@ -1,9 +1,9 @@
 pub mod delta_writer {
-    use deltalake::{operations::create::{CreateBuilder, self}, SchemaDataType};
+    use deltalake::{operations::create::{CreateBuilder, self}, SchemaDataType, DeltaTableError, DeltaTable};
     use polars::prelude::{DataFrame, DataType};
 
     
-    pub async fn write_in_delta(path: &str, df: DataFrame) {
+    pub async fn write_in_delta(path: &str, df: DataFrame){
         let mut create_builder = CreateBuilder::new()
             .with_location(path);
 
@@ -17,8 +17,17 @@ pub mod delta_writer {
                  true, Default::default())
         }
 
-        create_builder.await;
+        let create_table_result = create_builder.await;
 
+        match create_table_result {
+            Ok(table) => {
+                print!("######finished");
+                table;
+            },
+            Err(error) => {
+                error;
+            },
+        };
 
     }
 
